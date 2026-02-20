@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VIT GPA Calculator | Official VIT Formula</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="vit-watermark">VIT</div>
+    <div class="container">
+        <div class="header">
+            <h1>VIT GPA Calculator</h1>
+            <p class="institution">Vellore Institute of Technology</p>
+        </div>
+
+        <div class="calculator-section">
+            <div class="section-header">
+                <h2>SGPA Calculator</h2>
+                <button class="add-subject" id="addSubject">+ Add Subject</button>
+            </div>
+            <div class="subjects-container" id="subjectsContainer"></div>
+            <div class="grade-scale">
+                <span>S = 10</span><span>A = 9</span><span>B = 8</span><span>C = 7</span>
+                <span>D = 6</span><span>E = 5</span><span>F = 0</span>
+                <span class="credit-info">Credits: 4, 3, 2, 1</span>
+            </div>
+            <div class="sgpa-output">
+                <button class="calculate-sgpa" id="calculateSGPA">Calculate GPA</button>
+                <div class="result-box" id="sgpaDisplay">
+                    <span class="label">SGPA:</span>
+                    <span class="value" id="sgpaValue">—</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="calculator-section">
+            <div class="section-header">
+                <h2>CGPA Calculator</h2>
+            </div>
+            <div class="cgpa-inputs">
+                <div class="input-group">
+                    <label for="prevCGPA">Previous CGPA (0–10):</label>
+                    <input type="number" id="prevCGPA" step="0.01" min="0" max="10" >
+                </div>
+                <div class="input-group">
+                    <label for="prevCredits">Previous Total Credits:</label>
+                    <input type="number" id="prevCredits" step="1" min="0" >
+                </div>
+                <div class="input-group">
+                    <label for="currSGPA">Current Semester SGPA:</label>
+                    <input type="number" id="currSGPA" step="0.01" min="0" max="10" readonly placeholder="Will auto-fill">
+                </div>
+                <div class="input-group">
+                    <label for="currCredits">Current Semester Credits:</label>
+                    <input type="number" id="currCredits" step="1" min="0" readonly placeholder="Will auto-fill">
+                </div>
+            </div>
+            <div class="cgpa-output">
+                <button class="calculate" id="calculateCGPA">Calculate New CGPA</button>
+                <div class="result-box" id="cgpaDisplay">
+                    <span class="label">New CGPA:</span>
+                    <span class="value" id="cgpaValue">—</span>
+                </div>
+            </div>
+            <div class="formula-note">
+                CGPA = (Prev CGPA × Prev Credits + Curr SGPA × Curr Credits) / (Prev Credits + Curr Credits)
+            </div>
+            <div id="motivationBox" class="motivation-box" style="display:none;"></div>
+        </div>
+
+        <div class="reset-section">
+            <button class="reset-btn" id="resetDefault">Reset to 6 Slots</button>
+        </div>
+
+        <footer class="footer">
+            Made with ❤️ for VIT Students - Sanapala Saimani
+        </footer>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
