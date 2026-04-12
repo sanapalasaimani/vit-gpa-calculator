@@ -11,6 +11,15 @@ document.addEventListener('DOMContentLoaded', function() {
     const currCredits = document.getElementById('currCredits');
     const resetBtn = document.getElementById('resetDefault');
     const motivationBox = document.getElementById('motivationBox');
+    
+    // Improvement Calculator Elements
+    const addImprovementRowBtn = document.getElementById('addImprovementRow');
+    const improveRowsContainer = document.getElementById('improvementRowsContainer');
+    const calculateImprovement = document.getElementById('calculateImprovement');
+    const improveCurrCGPA = document.getElementById('improveCurrCGPA');
+    const improveTotalCredits = document.getElementById('improveTotalCredits');
+    const improvementValue = document.getElementById('improvementValue');
+    const improvementNote = document.getElementById('improvementNote');
 
     const gradePoints = { 'S': 10, 'A': 9, 'B': 8, 'C': 7, 'D': 6, 'E': 5, 'F': 0 };
 
@@ -51,26 +60,17 @@ document.addEventListener('DOMContentLoaded', function() {
             let val = this.value;
             if (val === '') return;
             
-            // Allow only numbers and decimal point
-            val = val.replace(/[^\d.]/g, '');
-            
-            // Prevent multiple decimal points
-            const parts = val.split('.');
-            if (parts.length > 2) {
-                val = parts[0] + '.' + parts.slice(1).join('');
-            }
-            
-            // Limit decimal places
-            if (parts[1] && parts[1].length > 2) {
-                val = parts[0] + '.' + parts[1].substring(0, 2);
-            }
-            
-            this.value = val;
-            
             const num = parseFloat(val);
             if (!isNaN(num)) {
+                // Only force change if absolute limits are hit
                 if (num > 10) this.value = '10';
                 if (num < 0) this.value = '0';
+                
+                // Truncate to 2 decimal places if user enters more
+                const parts = val.split('.');
+                if (parts[1] && parts[1].length > 2) {
+                    this.value = parts[0] + '.' + parts[1].substring(0, 2);
+                }
             }
         });
     }
@@ -352,5 +352,106 @@ document.addEventListener('DOMContentLoaded', function() {
         console.log('Test 8: Enter key - Should trigger calculations');
     };
     
+    // --- Grade Improvement Logic ---
+
+    function createImprovementRow() {
+        const row = document.createElement('div');
+        row.className = 'improvement-row';
+
+        const credDiv = document.createElement('div');
+        credDiv.className = 'credit-select';
+        const credSelect = document.createElement('select');
+        [4, 3, 2, 1.5, 1].forEach(c => {
+            const opt = document.createElement('option');
+            opt.value = c;
+            opt.textContent = c + ' credits';
+            credSelect.appendChild(opt);
+        });
+        credDiv.appendChild(credSelect);
+
+        const gradeDiv = document.createElement('div');
+        gradeDiv.className = 'grade-select';
+        
+        const oldSel = document.createElement('select');
+        const newSel = document.createElement('select');
+        
+        Object.keys(gradePoints).forEach(g => {
+            const opt1 = document.createElement('option');
+            opt1.value = g; opt1.textContent = 'Old: ' + g;
+            oldSel.appendChild(opt1);
+
+            const opt2 = document.createElement('option');
+            opt2.value = g; opt2.textContent = 'New: ' + g;
+            newSel.appendChild(opt2);
+        });
+        
+        oldSel.value = 'C';
+        newSel.value = 'S';
+
+        gradeDiv.append(oldSel, document.createTextNode(' → '), newSel);
+
+        const removeBtn = document.createElement('button');
+        removeBtn.className = 'remove-subject';
+        removeBtn.textContent = '×';
+        removeBtn.onclick = () => {
+            if (document.querySelectorAll('.improvement-row').length > 1) {
+                row.remove();
+            } else {
+                showError(removeBtn, 'At least one row required');
+            }
+        };
+
+        row.append(credDiv, gradeDiv, removeBtn);
+        return row;
+    }
+
+    addImprovementRowBtn.onclick = () => {
+        improveRowsContainer.appendChild(createImprovementRow());
+    };
+
+    // Initialize with 1 row
+    improveRowsContainer.appendChild(createImprovementRow());
+
+    calculateImprovement.onclick = function() {
+        removeExistingErrors();
+        
+        const curCGVal = validateNumberInput(improveCurrCGPA.value, 0, 10, 'Current CGPA');
+        const totalCredVal = validateNumberInput(improveTotalCredits.value, 1, Infinity, 'Total Credits');
+
+        if (!curCGVal.valid) { showError(improveCurrCGPA, curCGVal.message); return; }
+        if (!totalCredVal.valid) { showError(improveTotalCredits, totalCredVal.message); return; }
+
+        let totalGained = 0;
+        let valid = true;
+
+        document.querySelectorAll('.improvement-row').forEach(row => {
+            const cred = parseFloat(row.querySelector('.credit-select select').value);
+            const selects = row.querySelectorAll('select');
+            const oldG = gradePoints[selects[1].value];
+            const newG = gradePoints[selects[2].value];
+
+            if (newG <= oldG) {
+                showError(selects[2], 'New grade must be higher');
+                valid = false;
+            }
+            totalGained += cred * (newG - oldG);
+        });
+
+        if (!valid) return;
+
+        const increase = totalGained / totalCredVal.value;
+        const finalCG = curCGVal.value + increase;
+
+        improvementValue.textContent = finalCG.toFixed(4);
+        improvementNote.style.display = 'block';
+        improvementNote.innerHTML = `Points Gained: ${totalGained.toFixed(2)} | CGPA Increase: +${increase.toFixed(4)}`;
+        
+        const displayBox = document.getElementById('improvementDisplay');
+        displayBox.classList.add('calculated');
+        setTimeout(() => displayBox.classList.remove('calculated'), 500);
+    };
+
+    restrictCGPAInput(improveCurrCGPA);
+
     window.testCalculator();
 });

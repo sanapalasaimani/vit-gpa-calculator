@@ -69,6 +69,34 @@
             <div id="motivationBox" class="motivation-box" style="display:none;"></div>
         </div>
 
+        <div class="calculator-section">
+            <div class="section-header">
+                <h2>Grade Improvement Calculator</h2>
+                <button class="add-subject" id="addImprovementRow">+ Add Subject</button>
+            </div>
+            <div class="cgpa-inputs">
+                <div class="input-group">
+                    <label for="improveCurrCGPA">Current Overall CGPA:</label>
+                    <input type="number" id="improveCurrCGPA" step="0.01" min="0" max="10" placeholder="e.g. 8.45">
+                </div>
+                <div class="input-group">
+                    <label for="improveTotalCredits">Total Credits Completed:</label>
+                    <input type="number" id="improveTotalCredits" step="1" min="0" placeholder="e.g. 120">
+                </div>
+            </div>
+            <div class="improvement-rows-container" id="improvementRowsContainer">
+                <!-- Rows added dynamically -->
+            </div>
+            <div class="cgpa-output">
+                <button class="calculate" id="calculateImprovement">Calculate Impact</button>
+                <div class="result-box" id="improvementDisplay">
+                    <span class="label">Projected CGPA:</span>
+                    <span class="value" id="improvementValue">—</span>
+                </div>
+            </div>
+            <div id="improvementNote" class="formula-note" style="display:none; margin-top: 1.5rem;"></div>
+        </div>
+
         <div class="reset-section">
             <button class="reset-btn" id="resetDefault">Reset to 6 Slots</button>
         </div>
